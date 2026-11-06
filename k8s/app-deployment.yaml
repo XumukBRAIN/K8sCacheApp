@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-deployment
+  namespace: default
+  labels:
+    app: k8scache-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: k8scache-app
+  template:
+    metadata:
+      labels:
+        app: k8scache-app
+    spec:
+      containers:
+        - name: k8scache-app
+          image: k8scache-app:latest
+          imagePullPolicy: Never # Запрещает k8s искать образ в Docker Hub, берет локальный из minikube
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_DATA_REDIS_HOST
+              value: "k8scache-redis"
+            - name: SPRING_DATA_REDIS_PORT
+              value: "6379"
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "1000m"
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
